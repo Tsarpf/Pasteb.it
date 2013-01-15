@@ -1,0 +1,131 @@
+require('coffee-script'); 
+//require('./server/browserchannel.js');
+//require('socket.io');
+var connect = require('connect');
+var	sharejs = require('share');
+
+//var hat = require('hat').rack(32, 36);
+
+var redis =  require('redis');
+
+var port = 8000;
+
+var server = connect(
+      connect.logger(),
+      connect.static(__dirname),
+	  	connect.router(function (app) {
+			//app.all('*', function(req, res, next) {
+			//	res.setHeader("Access-Control-Allow-Origin", "*");
+			//	res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
+			//	next();
+			//});
+			/*
+			app.get('/?channel/test*', function(req,res,next) {
+			var splitQ = req.url.split('?');
+			//var locEnd = '?' + splitQ[1]; 
+				res.writeHead(302, {location: 'http://pasteb.it:8000/channel/test?' + splitQ[1]});
+				res.end();
+			});
+			*/
+			app.get('/?', function(req, res, next) {
+				console.log('asked for index');
+				var randomSessionId = randomDocName(10);
+				res.writeHead(303, {location: '/index.html?' + randomSessionId});
+				res.write('');
+				res.end();
+			});
+			
+			app.get('/?acesrc/', function(req, res, next){
+				res.writeHead(302, {location: '/acesrc/'});
+				res.end();
+			});
+			
+			app.get('/?raw/*', function(req, res, next){
+				var slashArray = req.url.split('/');
+				var pasteName = slashArray[slashArray.length - 1];
+				console.log(pasteName);
+				var sharejsopen = sharejs.client.open('pad:' + pasteName, 'text', 'http://pasteb.it:8000/channel', function(error, doc) {
+					if(error){console.log("error: " + error);}
+					res.writeHead(200, {"Content-Type": "text/plain"});
+					//res.writeHead(200, {"Content-Type": "RIPULI X:D:D:"});
+					res.write(doc.snapshot);
+					res.end();
+				});				
+				console.log(sharejsopen.state);
+			});
+		})
+);
+
+
+var options = {
+  db:
+	{type: 'redis'},
+  browserChannel:
+  	{cors:'http://pasteb.it'},
+  auth: function(client, action)
+  {
+		console.log(client.remoteAddress);
+		if(action.name === 'submit op' && action.docName.match(/paste:/) == 'paste:')
+		{
+			var pasteText;
+			console.log(pasteText);
+			sharejs.client.open(action.docName, 'text', 'http://pasteb.it:8000/channel', function(error, doc) {
+				pasteText = doc.getText();
+				console.log(pasteText);
+			});
+			
+			//We should delete the 'paste:pastename' document since it is no longer needed.. ...as soon as sharejs supports deleting documents.
+			
+			sharejs.client.open('read-only:' + action.docName.substring(6), 'text', 'http://pasteb.it:8000/channel', function(error, doc2) {
+				if(doc2.getText() != "") //means the paste already exists, and we shouldn't overwrite existing pastes.
+				{
+					console.log(client.remoteAddress + ' tried to paste to an existing read-only paste.');
+					action.reject();
+					console.log('rejected');
+					return;
+				}
+				doc2.insert(0, pasteText);
+				action.accept();
+				console.log('accepted');
+				return;
+			});
+
+		}
+		else if (action.name === 'submit op' && action.docName.match(/read-only/) == 'read-only' && client.remoteAddress != "78.46.176.166") //pasteb.it ip
+		{
+			action.reject();
+		}
+		else
+		{
+			action.accept();
+		}
+  }
+};
+
+// Attach the sharejs REST and Socket.io interfaces to the server
+sharejs.server.attach(server, options);
+
+
+server.listen(port);
+
+process.title = 'tsurbaserver'
+process.on('uncaughtException', function (err) {
+  console.error('An error has occurred. Please e-mail me at admin@pasteb.it');
+});
+
+console.log("now running");
+
+
+function randomDocName(length)
+{
+  var chars, x;
+  if (length == null) {
+    length = 10;
+  }
+  chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  var name = [];
+  for (x = 0; x < length; x++) {
+    name.push(chars[Math.floor(Math.random() * chars.length)]);
+  }
+  return name.join('');
+}

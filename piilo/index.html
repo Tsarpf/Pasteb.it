@@ -1,0 +1,121 @@
+<html>
+<head>
+<title> Pasteb.it </title>
+		<style type="text/css" media="screen">
+			body {
+				overflow: hidden;
+			}
+			
+			#editor { 
+				position:absolute;
+				left:1px;
+			}
+			
+			#editor2 {
+				position:absolute;
+				left:33%;
+			}
+				
+			#editor3 {
+				position:absolute;
+				left:66%;
+			}
+		</style>
+		
+<!--<script src="ace.js"></script>-->
+<script src="http://pasteb.it:8000/acesrc/ace.js" type="text/javascript" charset="utf-8"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.17/jquery-ui.min.js"></script>
+<script src="http://pasteb.it:8000/channel/bcsocket.js"></script>
+<script src="http://pasteb.it:8000/socket.io/socket.io.js"></script>
+<script src="http://pasteb.it:8000/share/share.js"></script>
+<script src="http://pasteb.it:8000/share/ace.js"></script>
+<script src="http://pasteb.it/prettify.js"></script>
+<script src="http://pasteb.it:8000/share/json.js"></script>
+<script src="omatFileet/getAceMode.js"></script>
+
+
+<script src="http://pasteb.it/acesrc/theme-eclipse.js" type="text/javascript" charset="utf-8"></script>
+<!--<script src="http://pasteb.it/acesrc/mode-csharp.js" type="text/javascript" charset="utf-8"></script>-->
+
+
+<script>
+function createNewEditor()
+{
+}
+function optionChange(lang, editorID)
+{
+	//var editor = ace.edit(document.getElementById(editorID));
+	setAceMode(lang, editorID);
+    //editor.getSession().setMode(new newMode());
+}
+</script>
+
+</head>
+<body>
+
+<img src ="http://pasteb.it/pastebit.png" />
+
+<div id="editor" style="height: 500px; width: 33%">Loading...</div>
+<div id="editor2" style="height: 500px; width: 33%">Loading...</div>
+<div id="editor3" style="height: 500px; width: 33%">Loading...</div>
+<script>
+//var require('share').client;
+
+var elem = document.getElementById('editor');
+var editor = ace.edit(elem);
+sharejs.open('aidsdes', 'text',  function(error, doc) {
+	doc.attach_ace(editor);
+	elem.disabled=false;
+	editor.setTheme("ace/theme/eclipse");
+});
+	
+	
+var elem2 = document.getElementById('editor2');
+var editor2 = ace.edit(elem2);
+sharejs.open('vittutus', 'text', function(error, doc) {
+	doc.attach_ace(editor2);
+	elem2.disabled=false;
+});
+
+var elem3 = document.getElementById('editor3');
+var editor3 = ace.edit(elem3);
+sharejs.open('sagepenistys', 'text', function(error, doc) {
+	doc.attach_ace(editor3);
+	elem3.disabled=false;
+});
+
+  
+</script>
+
+<select id="editorPasteType" onchange="optionChange(this.value, 'editor')">
+	  <option>csharp</option>
+	  <option>c_cpp</option>
+	  <option>javascript</option>
+	  <option>java</option>
+</select>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

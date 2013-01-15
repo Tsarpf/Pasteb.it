@@ -1,0 +1,2 @@
+RewriteEngine on
+RewriteRule (.*) http://78.46.176.166:8000/$1 [P]

@@ -1,0 +1,66 @@
+//textile
+pasteb.it todo & path to ebing
+
+[x] - Change syntax highlighting on a single document from the go by typing
+        //<language> on the first line
+		* Remove the line after it has been noticed.
+
+[x] - Button to get the raw thingy from current pasta
+
+[x] - Limit the size of the documents so the server won't be slowed down by 
+        random spamming https://github.com/josephg/ShareJS/issues/90#issuecomment-5327970
+		
+[x] - If paste name contains a special character, f.ex '#', make it readonly
+    	(cleary indicate it's paste'd and not editable etc)		
+		
+[x] - Make an unique session for all new connections. 
+		* Add the possibility to join a "public" pad if someone desires das spam		
+
+[x] - The syntax highlighter choosed by the paster should be automatically
+		chosen for the reader of the paste.
+		
+[x?] - Block delete etc actions from clients?
+		
+[x] - Download button to download a pad's content as a text file. 
+
+[x] - Remove chosen syntax highlighter name from raw and downloadable paste
+
+[ ] - Fix layout (CSS, etc). The layout is only correct for my own browser(s) xd
+
+[ ] - Name language options so they're easier to understand.
+		
+[ ] - Make it instantly obvious whether a pad is editable or not.
+
+[ ] - The 'Flow' downwards thingy.
+		* Diff the doc that is being edited to the one above 
+		
+[ ] - Make it possible to add and remove pads between/before/after the existing
+        ones. (probably labour intensive to code due to the current program
+        structure, maybe rewrite?)
+		
+[ ] - Tabs to pads (notepad++ style)
+
+[ ] - Allow creating pastes by a HTTP POST request to an url such as
+		http://pasteb.it/send  (http://pastebit.com/doc)
+
+[ ] - Get a new domain for the service. Pastebit.com exists and I don't want to
+		compete.
+		* GroupCo.de and GroupCode.com?
+
+[ ] - Session data thingy, for example for letting everyone in the session know how many
+		pads there are open(and open them automatically?)
+
+[ ] - Different viewing options, for example the option to either divide the
+		viewport to pads entirely or standard sized pads.
+		
+[ ] - Sidebar from a button or mouse hover?
+		http://mediaformations.com/examples/SimpleFeedbackButton.html
+		
+[ ] - Shoutbox/chat/something so. !hl <line number> ftw
+
+[ ] - Default language 'Plain text'
+
+[ ] - Button for forcing linebreaks
+
+Helpful stuff:
+http://www.designlabelblog.com/2009/03/20-ways-to-create-javascript-modal.html

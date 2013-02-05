@@ -1,13 +1,14 @@
 require('coffee-script'); 
 //require('./server/browserchannel.js');
+var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 //require('socket.io');
 var connect = require('connect');
 var	sharejs = require('share');
 
-//var hat = require('hat').rack(32, 36);
+var hat = require('hat').rack(32, 36);
 
 var redis =  require('redis'),
-	redisClient = redis.createClient();
+	redisClient = redis.createClient(6380, 'localhost');
 
 var port = 8000;
 
@@ -98,28 +99,32 @@ function supportedAceLang(lang)
 
 var options = {
   db:
-	{type: 'redis'},
+	{type: 'redis', hostname: 'localhost', port: 6380},
   browserChannel:
   	{cors:'http://pasteb.it'},
   auth: function(client, action)
   {
-		if(client.remoteAddress == "78.46.176.166")  //pasteb.it ip //If this is abuse'able, please help me and I'll... give you a beer or something!
+		if(client.remoteAddress == "78.46.176.166")  //pasteb.it ip
 		{
 			action.accept();
 			return;
 		}
 		if(action.name === 'submit op' && action.docName.match(/paste:/) == 'paste:')
 		{
+console.log(action.docName.substring(0));
 			if(redisClient.exists("ShareJS:doc:read-only:" + action.docName.substring(6)) === 1)
 			{
 				action.reject();
+console.log('paste rejected');
 				return;
 			}
-			action.accept();
 			var pasteText;
+try
+{
 			sharejs.client.open(action.docName, 'text', 'http://pasteb.it:8000/channel', function(error, doc) {
+console.log('ebin');
 				pasteText = doc.getText();
-				
+console.log('Pastetext: ', pasteText);				
 				sharejs.client.open('read-only:' + action.docName.substring(6), 'text', 'http://pasteb.it:8000/channel', function(error, doc2) {
 					if(doc2.getText() !== "") //means the paste already exists, and we shouldn't overwrite existing pastes.
 					{
@@ -130,9 +135,14 @@ var options = {
 					return;
 				});
 			});
-			
+}
+catch(err)
+{
+console.log("Error: ", err);
+}						
+console.log('paste accepted');
+			action.accept();
 			//We should delete the 'paste:pastename' document since it is no longer needed.. ...as soon as sharejs supports deleting documents.
-			//But whatever, storage space is not a problem, at least not right now.
 
 		}
 		else if (action.name === 'submit op' && action.docName.match(/read-only/) == 'read-only')
@@ -218,6 +228,7 @@ server.listen(port);
 process.title = 'tsurbaserver';
 process.on('uncaughtException', function (err) {
   console.error('An error has occurred. Please e-mail me at admin@pasteb.it');
+  console.log("Error: ", err);
 });
 
 console.log("now running");

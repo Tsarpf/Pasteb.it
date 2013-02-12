@@ -2,13 +2,11 @@ var UserOptionChange = false;
 function checkAndSetLang(thisID, doc)
 {
 	var text = padArray[thisID].aceEdit.getSession().getDocument().getValue();
-	//var text = doc.getText();
 	var firstLine = text.split('\n')[0];
 	
 	if(firstLine != padArray[thisID].lastFirstLine)
 	{
 		padArray[thisID].lastFirstLine = firstLine;
-		//alert(lineArray[0]);
 		if(firstLine.charAt(0) == '/' && firstLine.charAt(1) == '/')
 		{
 			var lang = firstLine.substring(2); //removes the two leading //'s
@@ -25,3 +23,11 @@ function checkAndSetLang(thisID, doc)
 	}
 	setTimeout(function(){checkAndSetLang(thisID, doc)},1000);
 }
+
+
+
+
+
+
+
+

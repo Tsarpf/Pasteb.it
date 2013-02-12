@@ -5,8 +5,9 @@ function setAceMode(lang, editorID)
 {
   if(supportedAceLang(lang))
   {
-  gLang = lang;
-  gEditorID = editorID;
+	  gLang = lang;
+	  gEditorID = editorID;
+	  
 	  if(alreadyIncluded(lang))
 	  {
 		  set(editorID);
@@ -15,6 +16,8 @@ function setAceMode(lang, editorID)
 	  {			
 			includeModeFile();
 	  }
+	  changeUrlSh(lang);
+	  selectLangOption(lang, editorID);
 	  
   }
   else
@@ -23,17 +26,28 @@ function setAceMode(lang, editorID)
   }
 }
 
+function selectLangOption(lang, editorID) //Shitty and slow. But I'm not aware of any other way.
+{
+	var selectIdx = padArray[editorID].selectMode.options.selectedIndex;
+	var selectTMOptions = padArray[editorID].selectMode.options;
+	if(selectTMOptions[selectIdx].text == lang)
+	{
+		return;
+	}
+	for(var i = 0; i < selectTMOptions.length; i++)
+	{
+		//if(selectTMOptions[i].text == lang && selectTMOptions[i].selected == "0")
+		if(selectTMOptions[i].text == lang && selectTMOptions.selectedIndex != i)
+		{
+			//selectTMOptions[i].selected = "1";
+			selectTMOptions.selectedIndex = i;
+		}
+	}
+}
+
 function set(editorID)
 {
-		  
 		  var mode = require("ace/mode/" + gLang).Mode;
-		  //var editor = ace.edit(document.getElementById(gEditorID));
-		  //var editor = document.getElementById(gEditorID);
-		  //var editor = window.aceEditor.getSession()
-		  //window.aceEditor.getSession()
-		  
-		  //editor.getSession().setMode(new mode());
-
 		  padArray[editorID].aceEdit.getSession().setMode(new mode());
 }
 
@@ -53,7 +67,50 @@ function includeModeFile()
 	importedLanguages.push(gLang);
 }
 
-
+function changeUrlSh(lang) //move to setAceMode
+{
+	if(document.URL.indexOf("&sh=") >= 0)
+	{		
+		var theme = "";
+		if(document.URL.indexOf("&theme=") >= 0)
+		{
+			theme = document.location.toString().split("&theme=")[1]
+		}
+		if(theme.indexOf("&") >= 0)
+		{
+			theme = theme.split("&")[0];
+		}
+		
+		theme = "&theme=" + theme;
+		
+		var curLang = document.URL.toString().split("&sh=")[1];
+		if(curLang.indexOf("&") >= 0)
+		{
+			curLang = curLang.split("&")[0];
+		}
+		if(curLang == lang)
+		{
+			return;
+		}
+		
+		var newURL = document.URL.toString().substring(0,document.URL.indexOf("&"));
+		//var newURL = document.URL.toString().split("&sh=")[0];
+		newURL += "&sh=" + lang + theme;
+		document.location = newURL;
+		
+	}
+	else
+	{
+		var theme = "";
+		if(document.URL.indexOf("&theme=") >= 0)
+		{
+			theme = "&" +  document.location.toString().split("&")[2];
+		}
+		
+		var newURL = document.URL + "&sh=" + lang + theme;
+		document.location = newURL;
+	}
+}
 
 function alreadyIncluded(lang)
 {
@@ -112,5 +169,3 @@ var languages=new Array
 "textile",
 "xml"
 );
-
-//<script src="src/mode-javascript.js" type="text/javascript" charset="utf-8"></script>

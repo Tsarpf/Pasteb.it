@@ -72,12 +72,23 @@
 		{
 			sessionID = randomDocName(10);
 			padArray.push(new Pad());
-			padArray[padCount].initViewer("read-only:" + document.location.hash.slice(1));
-			lastPasteName = document.location.hash.slice(1);
+			var pasteName = document.location.hash.slice(1);
+			
+			if(pasteName.indexOf("&") >= 0)
+			{
+				pasteName = pasteName.split("&")[0];
+			}
+			
+			padArray[padCount].initViewer("read-only:" + pasteName);
+			lastPasteName = pasteName;
 		}
 		else if(document.location.search)
 		{
 			sessionID = document.location.search.substring(1);
+			if(sessionID.indexOf("&") >= 0)
+			{
+				sessionID = sessionID.split("&")[0];
+			}
 			padArray.push(new Pad());
 			padArray[padCount].initialize();
 		}

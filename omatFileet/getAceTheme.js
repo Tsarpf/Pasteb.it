@@ -13,6 +13,11 @@ function setAceTheme(theme, editorID)
        {
             includeThemeFile(theme, editorID);
        }
+	   selectThemeOption(theme, editorID);
+	   if(theme != "chrome")
+	   {
+			changeUrlTheme(theme);
+	   }
    }
    else
    {
@@ -20,10 +25,27 @@ function setAceTheme(theme, editorID)
    }
 }
 
+function selectThemeOption(theme, editorID) //Shitty and slow. But I'm not aware of any other way.
+{
+	var selectIdx = padArray[editorID].selectMode.options.selectedIndex;	
+	var selectTMOptions = padArray[editorID].selectThemeMode.options;
+	if(selectTMOptions[selectIdx].text == theme)
+	{
+		return;
+	}
+	for(var i = 0; i < selectTMOptions.length; i++)
+	{
+		//if(selectTMOptions[i].text == theme && selectTMOptions[i].selected == "0")
+		if(selectTMOptions[i].text == theme &&selectTMOptions.selectedIndex != i)
+		{
+			//selectTMOptions[i].selected = "1";
+			selectTMOptions.selectedIndex = i;
+		}
+	}
+}
+
 function setTheme(editorID, theme)
 {
-    //var mode = require("ace/theme/" + theme).Mode;
-    //console.log("editorID: " + editorID + " theme: " + theme);
     padArray[editorID].aceEdit.setTheme("ace/theme/" + theme);
 }
 
@@ -43,6 +65,29 @@ function includeThemeFile(theme, editorID)
     document.getElementsByTagName("head")[0].appendChild(fileref);
 
     importedThemes.push(theme);
+}
+
+function changeUrlTheme(theme)
+{
+	if(document.URL.indexOf("&theme=") >= 0)
+	{
+		var curTheme = document.URL.toString().split("&theme=")[1];
+		if(curTheme.indexOf("&") >= 0)
+		{
+			curTheme = curTheme.split("&")[0];
+		}
+		if(curTheme == theme)
+		{
+			return;
+		}
+		var newURL = document.URL.substring(0,document.URL.indexOf("&theme="));
+		newURL += "&theme=" + theme;
+		document.location  = newURL;
+	}
+	else
+	{
+		document.location = document.URL + "&theme=" + theme;
+	}
 }
 
 function alreadyIncludedTheme(theme)

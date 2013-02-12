@@ -28,8 +28,6 @@ function Pad()
 	{
 		padCount += 1;
 		thisID = padCount - 1;
-		//Make an empty div where all parts of the pad are added to for easier managing
-//		this.addContainerDiv();
 		//new aceEditor with sharejs
 		this.addAceEditor();
 		//Add the mode/syntax-highlighter option menu
@@ -43,17 +41,14 @@ function Pad()
 		
 		this.addDownloadButton();
         
-        this.setDefaultTheme();
-		
-//		updateExistingDivs();
+        this.setThemeAndSH();
 	}
 	
 	this.initViewer = function(docName)
 	{
 		padCount += 1;
 		thisID = padCount - 1;
-		//Make an empty div where all parts of the pad are added to for easier managing
-//		this.addContainerDiv();
+		
 		//new aceEditor with sharejs
 		this.addAceViewer(docName);
 		//Add the mode/syntax-highlighter option menu
@@ -71,9 +66,7 @@ function Pad()
 		
 		this.urlField.value = "This is a read-only paste.";
 
-        this.setDefaultTheme();
-		
-//		updateExistingDivs();
+        this.setThemeAndSH(); //Also handles if url contains something else than the default theme
 	}
 
 		
@@ -108,7 +101,6 @@ function Pad()
 		
 		sharejs.open("" + sessionID + padCount, 'text', 'http://pasteb.it:8000/channel', function(error, doc) {
 			doc.attach_ace(aceEditor); 
-			console.log("Text: '" + doc.getText() + "'");
 			if(doc.getText() == "")
 			{
 				aceEditor.getSession().getDocument().setValue(helpString); // from helpstring.js
@@ -217,10 +209,34 @@ function Pad()
 		return this.aceEdit.getSession().getValue();
 	}
 
-    this.setDefaultTheme = function()
+    this.setThemeAndSH = function()
     {
-        this.selectThemeMode.options[defaultTheme].selected = "1";
-        setAceTheme(themes[defaultTheme], thisID); 
+        //this.selectThemeMode.options[defaultTheme].selected = "1";
+		if(document.URL.indexOf("&theme=") >= 0)
+		{
+			var theme = document.URL.split("&theme=")[1];
+			if(theme.indexOf("&") >= 0)
+			{
+				theme = theme.split("&")[0];
+			}
+			
+			setAceTheme(theme, thisID);
+		}
+		else
+		{
+			setAceTheme(themes[defaultTheme], thisID); 
+		}
+		
+		if(document.URL.indexOf("&sh=") >= 0)
+		{
+			var SH = document.URL.split("&sh=")[1];
+			if(SH.indexOf("&") >= 0)
+			{
+				SH = SH.split("&")[0];
+			}
+			
+			setAceMode(SH, thisID);
+		}
     }
 }
 
@@ -277,18 +293,4 @@ function optionChange(lang, editorIdx)
 function themeOptionChange(theme, editorIdx)
 {
     setAceTheme(theme, editorIdx);
-}
-
-
-function updateExistingDivs()
-{
-	var count = padCount;
-	for(var i = 0; i < count - 1; i++)
-	{
-		//padArray[i].padDiv.style.width = "" + (1 / count) * 100 + "%";
-		padArray[i].padDiv.style.width = ((1/padCount)*window.innerWidth - 15) + "px";
-		padArray[i].padDiv.style.left = "" + (i * (1/padCount) * window.innerWidth) + "px";
-		//padArray[i].padDiv.style.width = "768px";
-		//padArray[i].padDiv.style.left = i * 768 + "px";
-	}
 }
